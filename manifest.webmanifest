@@ -2,7 +2,7 @@
   "name": "WilliamEst Timeline Calendar",
   "short_name": "WE Calendar",
   "description": "A fan-made WilliamEst timeline calendar",
-  "start_url": "./calendar.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
