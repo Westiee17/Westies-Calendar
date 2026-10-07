@@ -153,15 +153,17 @@ const MIN=2024*12+10,MAX=2026*12+11;
 let mi=Math.min(Math.max(now.getFullYear()*12+now.getMonth(),MIN),MAX),sel=null,view="cal",yr="all",q="";
 const ico=t=>/FM/.test(t)?"🌏":/Concert|LOL|FANCON|Fancon|FANIVAL|Carnival/.test(t)?"🎤":/Series|EP\d|Trailer|Maniac/i.test(t)?"🎬":/live/i.test(t)?"🔴":/x[A-Zก-๙]|xWill/i.test(t)?"✨":"💙";
 const lab=(l,u)=>l||(/youtu/.test(u)?"▶ YouTube":/photos/.test(u)?"🖼 Photos":/x\.com|twitter/.test(u)?"𝕏 Post":"🔗 Link");
-const VER="dde501ae";
+const VER="3f5190fb";
 const kk=e=>e[0]+"|"+e[1]+"|"+e[2].length;
 let NEW=new Set(),nw=false;
 const SEEDR={};for(const k in SEED)SEEDR[k]=parseCSV(SEED[k]);
 const PUB={y25:"https://docs.google.com/spreadsheets/d/e/2PACX-1vRL9507LT10FlyMxr7AuQMQEpz8DpG3JADyfC3ZoxRrw6075bGNC1BUS7TCWMG4iPG_0byXlzVrGzyn/pub?gid=1109980149&single=true&output=csv"};
 const OS_APP_ID="1207e9da-e73b-4cd9-999b-022b93ede80b";
 if(OS_APP_ID){window.OneSignalDeferred=window.OneSignalDeferred||[];
- OneSignalDeferred.push(async OS=>{await OS.init({appId:OS_APP_ID,serviceWorkerPath:"Westies-Calendar/sw.js",serviceWorkerParam:{scope:"/Westies-Calendar/"},notifyButton:{enable:false}});window.OSK=OS;chips()});
- const sc=document.createElement("script");sc.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";sc.defer=true;document.head.appendChild(sc)}
+ OneSignalDeferred.push(async OS=>{try{await OS.init({appId:OS_APP_ID,serviceWorkerPath:"Westies-Calendar/sw.js",serviceWorkerParam:{scope:"/Westies-Calendar/"},notifyButton:{enable:false}});window.OSK=OS}catch(e){window.OSERR=String(e&&e.message||e)}chips()});
+ const sc=document.createElement("script");sc.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";sc.defer=true;sc.onerror=()=>{window.OSERR="OneSignal script blocked or failed to load"};document.head.appendChild(sc)}
+function pushInfo(){if(!OS_APP_ID)return"not set up";if(window.OSERR)return"error - "+window.OSERR;if(!window.OSK)return"OneSignal still loading or blocked";
+ try{const P=OSK.User.PushSubscription;return"ready | permission: "+(OSK.Notifications.permission?"allowed":"not allowed")+" | subscribed: "+(P.optedIn?"yes":"no")+" | id: "+(P.id?P.id.slice(0,8)+"...":"none")}catch(e){return"ready, details unavailable"}}
 const NM={y25:"2025 Timeline",y26:"2026 Timeline",tp:"ThamePo Stills",mq:"Maniac Q's",ms:"Maniac Stills"};
 const FN={y25:y25,y26:y26,mq:qs,tp:r=>series(r,"ThamePo"),ms:r=>series(r,"You Maniac")};
 let ST="Saved copy",busy=false,lastR=0,SEEN=new Set();
@@ -221,7 +223,7 @@ async function refresh(man){if(busy||(!man&&Date.now()-lastR<20000))return;busy=
  else ST="Saved copy";
  busy=false;render();chips();banner();
  if(add&&!window.OSK&&document.hidden&&typeof Notification!=="undefined"&&Notification.permission==="granted"&&localStorage.getItem("we_notify")==="1")navigator.serviceWorker.ready.then(r=>r.showNotification("WE Calendar 💙",{body:add+" new or updated moment"+(add>1?"s":"")+" added",icon:"icon-192.png",badge:"icon-192.png",tag:"we-update"})).catch(()=>{});
- if(man)alert(bad.length?"Couldn't read:\n"+bad.join("\n")+"\nCheck each sheet: Share > Anyone with the link > Viewer.":"All sheets are up to date 💙")}
+ if(man)alert("Push: "+pushInfo()+"\n\n"+(bad.length?"Couldn't read:\n"+bad.join("\n")+"\nCheck each sheet: Share > Anyone with the link > Viewer.":"All sheets are up to date 💙"))}
 chips();
 $("tc").onclick=()=>{view="cal";render()};$("tl").onclick=()=>{view="lst";render()};$("ta").onclick=()=>{view="arc";render()};
 $("p").onclick=()=>{mi--;sel=null;cal()};$("n").onclick=()=>{mi++;sel=null;cal()};$("cl").onclick=()=>{sel=null;cal()};$("td").onclick=()=>{mi=Math.min(Math.max(now.getFullYear()*12+now.getMonth(),MIN),MAX);sel=null;cal()};
